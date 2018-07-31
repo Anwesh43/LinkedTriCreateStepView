@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.tricreatestepview
  * Created by anweshmishra on 31/07/18.
  */
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.MotionEvent
@@ -195,6 +196,15 @@ class TriCreateStepView(ctx : Context) : View(ctx) {
             triCreateStep.startUpdating {
                 animator.start()
             }
+        }
+    }
+
+    companion object {
+
+        fun create(activity : Activity) : TriCreateStepView {
+            val view : TriCreateStepView = TriCreateStepView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
