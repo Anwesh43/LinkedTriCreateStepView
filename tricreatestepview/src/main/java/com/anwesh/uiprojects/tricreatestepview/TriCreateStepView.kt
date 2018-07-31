@@ -145,7 +145,31 @@ class TriCreateStepView(ctx : Context) : View(ctx) {
             canvas.drawTCSNode(i, state.scale, {
                 prev?.draw(it, paint)
             },paint)
-            
+
+        }
+    }
+
+    data class TriCreateStep(var i : Int) {
+
+        private var dir : Int = 1
+
+        private var curr : TCSNode = TCSNode(0)
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            curr.draw(canvas, paint)
+        }
+
+        fun update(stopcb : (Int, Float) -> Unit) {
+            curr.update {i, scale ->
+                curr = curr.getNext(dir) {
+                    dir *= -1
+                }
+                stopcb(i, scale)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            curr.startUpdating(cb)
         }
     }
 }
