@@ -13,6 +13,8 @@ import android.graphics.Paint
 
 val nodes : Int = 3
 
+val speed : Float = 0.025f
+
 fun Canvas.drawTCSNode(i : Int, scale : Float, paint : Paint) {
     val w : Float = width.toFloat()
     val h : Float = height.toFloat()
@@ -52,7 +54,7 @@ class TriCreateStepView(ctx : Context) : View(ctx) {
     data class State(var scale : Float = 0f, var dir : Float = 0f, var prevScale : Float = 0f) {
 
         fun update(cb : (Float) -> Unit) {
-            scale += dir * 0.1f
+            scale += dir * speed 
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f
