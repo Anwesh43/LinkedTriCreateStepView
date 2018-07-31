@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.hardware.camera2.params.ColorSpaceTransform
 
 val nodes : Int = 3
 
@@ -170,6 +171,29 @@ class TriCreateStepView(ctx : Context) : View(ctx) {
 
         fun startUpdating(cb : () -> Unit) {
             curr.startUpdating(cb)
+        }
+    }
+
+    data class Renderer(var view : TriCreateStepView) {
+
+        private val animator : Animator = Animator(view)
+
+        private val triCreateStep : TriCreateStep = TriCreateStep(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#212121"))
+            triCreateStep.draw(canvas, paint)
+            animator.animate {
+                triCreateStep.update {i, scale ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            triCreateStep.startUpdating {
+                animator.start()
+            }
         }
     }
 }
