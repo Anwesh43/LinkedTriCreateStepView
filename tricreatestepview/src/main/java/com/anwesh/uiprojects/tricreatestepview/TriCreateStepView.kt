@@ -24,7 +24,7 @@ fun Canvas.drawTCSNode(i : Int, scale : Float, cb : (Canvas)-> Unit, paint : Pai
     val sc1 : Float = Math.min(0.5f, scale) * 2
     val sc2 : Float = Math.min(0.5f, Math.max(0f, scale - 0.5f)) * 2
     val size : Float = gap/3
-    val y : Float = (size / 2) / Math.tan(deg.toDouble() / 2).toFloat()
+    val y : Float = (size / (2 * Math.sqrt(3.0).toFloat()))
     paint.strokeWidth = Math.min(w, h) / 60
     paint.strokeCap = Paint.Cap.ROUND
     paint.color = Color.parseColor("#3F51B5")
