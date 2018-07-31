@@ -15,7 +15,7 @@ val nodes : Int = 3
 
 val speed : Float = 0.025f
 
-fun Canvas.drawTCSNode(i : Int, scale : Float, paint : Paint) {
+fun Canvas.drawTCSNode(i : Int, scale : Float, cb : (Canvas)-> Unit, paint : Paint) {
     val w : Float = width.toFloat()
     val h : Float = height.toFloat()
     val gap : Float = w / nodes
@@ -28,9 +28,13 @@ fun Canvas.drawTCSNode(i : Int, scale : Float, paint : Paint) {
     paint.strokeCap = Paint.Cap.ROUND
     paint.color = Color.parseColor("#3F51B5")
     save()
-    translate(i * gap + gap/2 + gap * sc2, h / 2)
+    translate( gap * sc2, 0f)
+    cb(this)
+    save()
+    translate(i * gap + gap/2, h/2)
     rotate(deg * i)
     drawLine(-size/2 * sc1, y, size/2 * sc1, y, paint)
+    restore()
     restore()
 }
 
@@ -54,7 +58,7 @@ class TriCreateStepView(ctx : Context) : View(ctx) {
     data class State(var scale : Float = 0f, var dir : Float = 0f, var prevScale : Float = 0f) {
 
         fun update(cb : (Float) -> Unit) {
-            scale += dir * speed 
+            scale += dir * speed
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f
@@ -96,6 +100,52 @@ class TriCreateStepView(ctx : Context) : View(ctx) {
             if (animated) {
                 animated = false
             }
+        }
+    }
+
+    data class TCSNode(var i : Int, val state : State = State()) {
+
+        private var next : TCSNode? = null
+
+        private var prev : TCSNode? = null
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < nodes - 1) {
+                next = TCSNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun update(cb : (Int, Float) -> Unit) {
+            state.update {
+                cb(i, it)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : TCSNode {
+            var curr : TCSNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            canvas.drawTCSNode(i, state.scale, {
+                prev?.draw(it, paint)
+            },paint)
+            
         }
     }
 }
